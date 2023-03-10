@@ -1,17 +1,29 @@
-FROM node:18.12.1
+FROM node:18.12.1 AS base
 
 # install pnpm
 RUN curl -fsSL "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linuxstatic-x64" -o /bin/pnpm
 RUN chmod +x /bin/pnpm
 
-# copy files relevant to the project required by pnpm
-COPY ./* ./
+# deps stage
+FROM base AS dependencies
+WORKDIR /app
+COPY package.json pnpm-lock.yaml .npmrc ./
+# install
+RUN pnpm install
 
-RUN pnpm install --frozen-lockfile
-RUN pnpm build
 
-# Bundle app source
+# build stage
+FROM base AS build
+WORKDIR /app
 COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
+RUN pnpm build
+RUN pnpm prune --prod
 
-EXPOSE 3003
-CMD [ "ts-node", "./src/index.ts" ]
+# deploy stage
+FROM base AS deploy
+WORKDIR /app
+COPY --from=build /app/dist ./dist/
+COPY --from=build /app/node_modules ./node_modules
+
+CMD [ "node", "dist/main.js" ]
