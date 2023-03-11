@@ -1,7 +1,7 @@
 import { ProgramAccount, Proposal } from "@solana/spl-governance";
 import { EmbedBuilder } from "discord.js";
 
-export const makeEmbed = (
+export const CreateOpeningEmbed = (
   proposal: ProgramAccount<Proposal>,
   REALM: string
 ) => {

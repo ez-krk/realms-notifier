@@ -17,19 +17,24 @@ import { getConnectionContext } from "../utils/connection";
 import { getCertifiedRealmInfo } from "../models/registry/api";
 import { accountsToPubkeyMap } from "../tools/sdk/accounts";
 
-import { makeEmbed } from "../models/embed";
+import { CreateOpeningEmbed } from "../models/embed";
 
 export class ReadyListener extends Listener {
   public run(client: Client) {
     const fiveMinutesSeconds = 5 * 60;
     const ONE_HOUR_MINUTES_SECONDS = 60 * 60;
+    const ONE_HOUR_MILLISECONDS = ONE_HOUR_MINUTES_SECONDS * 1000;
     const toleranceSeconds = 30;
-    // const guildId = "848016432389160960";
-    const channedId = "1082985508122152980";
+    const channedId = process.env.CHANNEL_ID as string;
     const channel = client.channels.cache.get(channedId);
 
     if (!process.env.CLUSTER_URL) {
-      console.error("Please set CLUSTER_URL to a rpc node of choice!");
+      console.error("Please set CLUSTER_URL in the environment variables!");
+      process.exit(1);
+    }
+
+    if (!process.env.CHANNEL_ID) {
+      console.error("Please set  CHANNEL_ID in the environment variables!");
       process.exit(1);
     }
 
@@ -39,8 +44,7 @@ export class ReadyListener extends Listener {
       });
     }
 
-    // run every 5 mins, checks if a governance proposal just opened in the last 5 mins
-    // and notifies on WEBHOOK_URL
+    // run every hour, checks if a governance proposal just opened in the last hour
     async function runNotifier() {
       const REALM = process.env.REALM || "MNGO";
       const connectionContext = getConnectionContext("mainnet");
@@ -121,7 +125,7 @@ export class ReadyListener extends Listener {
             countJustOpenedForVoting++;
 
             // create embed
-            const openingProposalEmbed = makeEmbed(proposal, REALM);
+            const openingProposalEmbed = CreateOpeningEmbed(proposal, REALM);
             // console.log(embed)
             console.log(openingProposalEmbed);
             // post embed to relevant channel
@@ -130,18 +134,6 @@ export class ReadyListener extends Listener {
           // note that these could also include those in finalizing state, but this is just for logging
           else if (proposal.account.state === ProposalState.Voting) {
             countOpenForVotingSinceSomeTime++;
-
-            //// in case bot has an issue, uncomment, and run from local with webhook url set as env var
-            // const msg = `“${
-            //     proposal.account.name
-            // }” proposal just opened for voting 🗳 https://realms.today/dao/${escape(
-            //     REALM
-            // )}/proposal/${proposal.pubkey.toBase58()}`
-            //
-            // console.log(msg)
-            // if (process.env.WEBHOOK_URL) {
-            //   axios.post(process.env.WEBHOOK_URL, { content: msg })
-            // }
           }
 
           const remainingInSeconds =
@@ -190,9 +182,6 @@ export class ReadyListener extends Listener {
 
             console.log(msg);
             (channel as TextChannel).send({ embeds: [closingProposalEmbed] });
-            // if (process.env.WEBHOOK_URL) {
-            //   axios.post(process.env.WEBHOOK_URL, { content: msg });
-            // }
           }
         }
       }
@@ -204,7 +193,7 @@ export class ReadyListener extends Listener {
     // start notifier immediately
     errorWrapper();
 
-    setInterval(errorWrapper, ONE_HOUR_MINUTES_SECONDS);
+    setInterval(errorWrapper, ONE_HOUR_MILLISECONDS);
   }
   public constructor(context: Listener.Context, options: Listener.Options) {
     super(context, {
