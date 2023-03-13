@@ -1,0 +1,50 @@
+{
+  "folders": [
+    {
+      "name": "ROOT",
+      "path": "../"
+    }
+    // {
+    //   "name": "packages/app1",
+    //   "path": "../packages/app1"
+    // },
+    // {
+    //   "name": "packages/app2",
+    //   "path": "../packages/app2"
+    // },
+    // {
+    //   "name": "@models",
+    //   "path": "../src/tools/models"
+    // },
+    // {
+    //   "name": "@tools",
+    //   "path": "../src/tools"
+    // },
+    // {
+    //   "name": "@public",
+    //   "path": "../public"
+    // },
+    // {
+    //   "name": "@realms",
+    //   "path": "../public/realms"
+    // },
+    // {
+    //   "name": "@constants",
+    //   "path": "../src/tools/constants"
+    // },
+    // {
+    //   "name": "@types",
+    //   "path": "../src/tools/constants/types"
+    // },
+    // {
+    //   "name": "@config",
+    //   "path": "../src/config/"
+    // }
+  ],
+  "settings": {
+    "files.exclude": {
+      "node_modules/": true,
+      "packages/": true
+    }
+  }
+}

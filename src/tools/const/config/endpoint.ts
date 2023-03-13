@@ -1,17 +1,21 @@
-import type { EndpointTypes } from "../models/types";
+// Solana
 import { Connection } from "@solana/web3.js";
-import type { EndpointInfo } from "../types/types";
+// Constants
+import { MAINNET_RPC, DEVNET_RPC } from "./solana";
+
+// Types
+import type { EndpointTypes, ConnectionContext } from "../types";
+
+import { EndpointInfo } from "../types/interfaces";
 
 const ENDPOINTS: EndpointInfo[] = [
   {
     name: "mainnet",
-    url:
-      process.env.MAINNET_RPC ||
-      "http://realms-realms-c335.mainnet.rpcpool.com/258d3727-bb96-409d-abea-0b1b4c48af29/",
+    url: MAINNET_RPC,
   },
   {
     name: "devnet",
-    url: process.env.DEVNET_RPC || "https://api.dao.devnet.solana.com/",
+    url: DEVNET_RPC,
   },
   {
     name: "localnet",
@@ -19,13 +23,7 @@ const ENDPOINTS: EndpointInfo[] = [
   },
 ];
 
-console.log("deployed ENDPOINTS:", ENDPOINTS);
-
-export interface ConnectionContext {
-  cluster: EndpointTypes;
-  current: Connection;
-  endpoint: string;
-}
+console.log(`deployed ENDPOINTS:`, ENDPOINTS);
 
 export function getConnectionContext(cluster: string): ConnectionContext {
   const ENDPOINT = ENDPOINTS.find((e) => e.name === cluster) || ENDPOINTS[0];

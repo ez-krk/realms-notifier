@@ -1,13 +1,15 @@
+"use strict";
 import * as dotenv from "dotenv";
-
-/**
- * Load environment variables from a .env file, if it exists.
- */
-
 dotenv.config();
 
 import { SapphireClient } from "@sapphire/framework";
 
-const client = new SapphireClient({ intents: ["Guilds", "GuildMessages"] });
+import { DISCORD_BOT_TOKEN } from "./tools/const/config/discord";
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+export const client = new SapphireClient({
+  intents: ["Guilds", "GuildMessages"],
+});
+
+export const login = () => client.login(DISCORD_BOT_TOKEN);
+
+login();
