@@ -1,10 +1,6 @@
 version: "3"
-networks:
-  api_server_default:
-    external: trueservices:
-  hackernewsapp:
-    networks:
-      - api_server_default
+services:
+  realms_notifier:
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +11,4 @@ networks:
     network_mode: host
     # ports:
     #   - 7001:7001
-    command: node dist/main
-    
-    
-    
+    command: node dist/index.js
